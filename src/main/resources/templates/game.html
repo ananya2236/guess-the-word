@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Guess The Word</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #111827, #1f2937);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app {
+            width: 95%;
+            max-width: 700px;
+            min-height: 650px;
+            background: #f9fafb;
+            color: #111827;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        /* HEADER */
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 18px;
+            margin-bottom: 25px;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 800;
+        }
+
+        .logo span {
+            color: #16a34a;
+        }
+
+        .user {
+            background: #eef2ff;
+            color: #4338ca;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* INTRO */
+
+        .intro {
+            text-align: center;
+        }
+
+        .intro h1 {
+            margin: 5px 0;
+            font-size: 34px;
+        }
+
+        .intro p {
+            color: #6b7280;
+            margin-bottom: 25px;
+        }
+
+        /* START BUTTON */
+
+        .start-btn {
+            border: none;
+            background: #374151;
+            color: white;
+            padding: 13px 28px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .start-btn:hover {
+            background: #111827;
+            transform: translateY(-1px);
+        }
+
+        /* GAME SECTION */
+
+        #guessSection {
+            display: none;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            background: #f3f4f6;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+        /* INPUT */
+
+        .input-area {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        #guessInput {
+            width: 280px;
+            max-width: 100%;
+            padding: 15px;
+            border: 2px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 25px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        #guessInput:focus {
+            border-color: #111827;
+            box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+        }
+
+        .guess-btn {
+            display: block;
+            margin: 12px auto 0;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            background: #16a34a;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .guess-btn:hover {
+            background: #15803d;
+        }
+
+        .guess-btn:disabled,
+        #guessInput:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* GUESS BOARD */
+
+        #guesses {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .guess-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .letter {
+            width: 52px;
+            height: 52px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            color: white;
+            font-size: 22px;
+            font-weight: 800;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        }
+
+        .GREEN {
+            background: #16a34a;
+        }
+
+        .ORANGE {
+            background: #f59e0b;
+        }
+
+        .GREY {
+            background: #6b7280;
+        }
+
+        /* MESSAGE */
+
+        #message {
+            min-height: 28px;
+            margin-top: 25px;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .success {
+            color: #16a34a;
+        }
+
+        .error {
+            color: #dc2626;
+        }
+
+        /* INSTRUCTIONS */
+
+        .instructions {
+            margin-top: 30px;
+            padding: 18px;
+            background: #f3f4f6;
+            border-radius: 12px;
+            color: #6b7280;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .legend span {
+            font-weight: 600;
+        }
+
+        .green-text {
+            color: #16a34a;
+        }
+
+        .orange-text {
+            color: #d97706;
+        }
+
+        .grey-text {
+            color: #6b7280;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 500px) {
+
+            .app {
+                padding: 20px;
+                min-height: 100vh;
+                border-radius: 0;
+            }
+
+            .intro h1 {
+                font-size: 28px;
+            }
+
+            .letter {
+                width: 45px;
+                height: 45px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="logo">
+            GUESS<span>WORD</span>
+        </div>
+
+        <div class="user" id="userDisplay"></div>
+
+    </div>
+
+
+    <!-- INTRO -->
+
+    <div class="intro">
+
+        <h1>Guess the Word</h1>
+
+        <p>
+            Find the hidden 5-letter word in 5 attempts.
+        </p>
+
+        <button class="start-btn" id="startButton">
+            🎮 Start New Game
+        </button>
+
+    </div>
+
+
+    <!-- GAME -->
+
+    <div id="guessSection">
+
+        <div class="game-info">
+
+            <div class="badge">
+                🎯 5 Attempts
+            </div>
+
+            <div class="badge" id="attemptBadge">
+                Attempt 0 / 5
+            </div>
+
+        </div>
+
+
+        <div class="input-area">
+
+            <input
+                type="text"
+                id="guessInput"
+                maxlength="5"
+                placeholder="_____"
+                autocomplete="off"
+            >
+
+            <button
+                class="guess-btn"
+                id="guessButton">
+                Submit Guess
+            </button>
+
+        </div>
+
+
+        <div id="guesses"></div>
+
+    </div>
+
+
+    <!-- MESSAGE -->
+
+    <div id="message"></div>
+
+
+    <!-- INSTRUCTIONS -->
+
+    <div class="instructions">
+
+        <strong>How to play</strong>
+
+        <div class="legend">
+
+            <span class="green-text">
+                🟩 Correct
+            </span>
+
+            <span class="orange-text">
+                🟧 Wrong position
+            </span>
+
+            <span class="grey-text">
+                ⬜ Not found
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const username =
+        localStorage.getItem("username");
+
+
+    const userDisplay =
+        document.getElementById("userDisplay");
+
+    const startButton =
+        document.getElementById("startButton");
+
+    const guessSection =
+        document.getElementById("guessSection");
+
+    const guessInput =
+        document.getElementById("guessInput");
+
+    const guessButton =
+        document.getElementById("guessButton");
+
+    const guessesContainer =
+        document.getElementById("guesses");
+
+    const message =
+        document.getElementById("message");
+
+    const attemptBadge =
+        document.getElementById("attemptBadge");
+
+
+    let gameId = null;
+
+
+    /* CHECK LOGIN */
+
+    if (!username) {
+
+        window.location.href = "/login";
+
+    }
+
+
+    userDisplay.textContent =
+        "👤 " + username;
+
+
+    /* BUTTON EVENTS */
+
+    startButton.addEventListener(
+        "click",
+        startGame
+    );
+
+
+    guessButton.addEventListener(
+        "click",
+        submitGuess
+    );
+
+
+    /* ENTER KEY */
+
+    guessInput.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                submitGuess();
+
+            }
+
+        }
+    );
+
+
+    /* START GAME */
+
+    async function startGame() {
+
+        try {
+
+            const response = await fetch(
+                `/api/games/start?username=${encodeURIComponent(username)}`,
+                {
+                    method: "POST"
+                }
+            );
+
+
+            /*
+             * IMPORTANT:
+             * Backend can return either JSON
+             * or plain text error.
+             */
+
+            const text =
+                await response.text();
+
+
+            /* ERROR FROM BACKEND */
+
+            if (!response.ok) {
+
+                message.className = "error";
+
+                message.textContent = text;
+
+                return;
+            }
+
+
+            /* SUCCESS RESPONSE */
+
+            const result =
+                JSON.parse(text);
+
+
+            gameId =
+                result.gameId;
+
+
+            startButton.style.display =
+                "none";
+
+
+            guessSection.style.display =
+                "block";
+
+
+            guessesContainer.innerHTML =
+                "";
+
+
+            message.textContent =
+                "";
+
+
+            message.className =
+                "";
+
+
+            attemptBadge.textContent =
+                "Attempt 0 / 5";
+
+
+            guessInput.disabled =
+                false;
+
+
+            guessButton.disabled =
+                false;
+
+
+            guessInput.value =
+                "";
+
+
+            guessInput.focus();
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            message.className =
+                "error";
+
+            message.textContent =
+                "Unable to connect to server.";
+
+        }
+
+    }
+
+
+    /* SUBMIT GUESS */
+
+    async function submitGuess() {
+
+        const guessedWord =
+            guessInput.value
+                .toUpperCase()
+                .trim();
+
+
+        /* VALIDATION */
+
+        if (!/^[A-Z]{5}$/.test(guessedWord)) {
+
+            message.className =
+                "error";
+
+            message.textContent =
+                "Please enter exactly 5 letters.";
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/api/games/${gameId}/guess?guessedWord=${encodeURIComponent(guessedWord)}`,
+                    {
+                        method: "POST"
+                    }
+                );
+
+
+            /*
+             * Again, backend may return
+             * JSON or plain text.
+             */
+
+            const text =
+                await response.text();
+
+
+            /* ERROR */
+
+            if (!response.ok) {
+
+                message.className =
+                    "error";
+
+                message.textContent =
+                    text;
+
+                return;
+
+            }
+
+
+            /* SUCCESS */
+
+            const result =
+                JSON.parse(text);
+
+
+            /* DISPLAY GUESS */
+
+            displayGuess(result);
+
+
+            guessInput.value =
+                "";
+
+
+            /* UPDATE ATTEMPT */
+
+            attemptBadge.textContent =
+                `Attempt ${result.guessCount} / 5`;
+
+
+            /* WON */
+
+            if (result.gameWon) {
+
+                message.className =
+                    "success";
+
+                message.textContent =
+                    "🎉 Congratulations! You guessed the word!";
+
+                endGame();
+
+            }
+
+
+            /* LOST */
+
+            else if (result.gameLost) {
+
+                message.className =
+                    "error";
+
+                message.textContent =
+                    "😔 Better luck next time!";
+
+                endGame();
+
+            }
+
+
+            /* CONTINUE */
+
+            else {
+
+                message.className =
+                    "";
+
+                message.textContent =
+                    "Keep going! You can do it. 💪";
+
+                guessInput.focus();
+
+            }
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            message.className =
+                "error";
+
+            message.textContent =
+                "Unable to connect to server.";
+
+        }
+
+    }
+
+
+    /* DISPLAY GUESS */
+
+    function displayGuess(result) {
+
+        const row =
+            document.createElement("div");
+
+
+        row.className =
+            "guess-row";
+
+
+        const letters =
+            result.guessedWord.split("");
+
+
+        for (
+            let i = 0;
+            i < letters.length;
+            i++
+        ) {
+
+            const letter =
+                document.createElement("div");
+
+
+            letter.className =
+                "letter " +
+                result.result[i];
+
+
+            letter.textContent =
+                letters[i];
+
+
+            row.appendChild(letter);
+
+        }
+
+
+        guessesContainer.appendChild(row);
+
+    }
+
+
+    /* END GAME */
+
+    function endGame() {
+
+        guessInput.disabled =
+            true;
+
+
+        guessButton.disabled =
+            true;
+
+    }
+
+</script>
+
+</body>
+</html>
